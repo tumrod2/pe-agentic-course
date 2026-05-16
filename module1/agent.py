@@ -35,7 +35,9 @@ MOCK_RESPONSE = {
 
 # ── Prompt & config ────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = (
-    "You are a platform engineering assistant. Analyse the log snippet and return ONLY valid JSON with keys: summary (string), likely_cause (string), next_step (string)."
+    "You are a platform engineering assistant. "
+    "Analyse the log snippet and return ONLY valid JSON with keys: "
+    "summary (string), likely_cause (string), next_step (string)."
 )
 
 AGENT_CONFIG = {
@@ -48,8 +50,7 @@ AGENT_CONFIG = {
 }
 
 def load_sample() -> str:
-    sample = Path(__file__).parent / "sample_log.txt"
-    return sample.read_text()
+    return (Path(__file__).parent / "sample_log.txt").read_text()
 
 
 def run_agent() -> dict:
@@ -62,9 +63,7 @@ def run_agent() -> dict:
     else:
         result = ask(
             system=SYSTEM_PROMPT,
-            user=f"Context:\n{context}",
-            model=AGENT_CONFIG["model"],
-            max_tokens=AGENT_CONFIG["max_tokens"],
+            user=f"Context:\n{context}"
         )
 
     print(json.dumps(result, indent=2))
