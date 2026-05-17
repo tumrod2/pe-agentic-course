@@ -50,7 +50,6 @@ SYSTEM_PROMPT = (
     "confidence (HIGH|MEDIUM|LOW): HIGH only when the root cause is confirmed in logs, "
     "next_step (string): concrete next step, "
     "escalate (boolean): true if a human must reveiw before taking action."
-
 )
 
 AGENT_CONFIG = {

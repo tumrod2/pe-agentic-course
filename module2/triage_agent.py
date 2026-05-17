@@ -55,7 +55,15 @@ MOCK_RESPONSE = {
 #
 # Hint: be explicit about when escalate should be true vs false.
 # Check solutions/solution.py only after you have made your own attempt.
-SYSTEM_PROMPT = ""  # Replace this empty string with your prompt
+SYSTEM_PROMPT = (
+    "You are a CI/CD triage agent. "
+    "Analyse and the diagnose the log snippet and return ONLY valid JSON with keys: "
+    "summary (string): 1 sentence, "
+    "likely_cause (string): 1 sentence on root cause of the failure, "
+    "confidence (HIGH|MEDIUM|LOW): your confidence in the diagnosis, "
+    "next_step (string): 1 concrete remediation action, "
+    "escalate (boolean): true if a human needs to intervene."
+)
 
 
 def load_sample() -> str:
@@ -84,7 +92,7 @@ def run_agent() -> dict:
     return ask(
         system=SYSTEM_PROMPT,
         user=f"CI failure log:\n\n{log_content}",
-        max_tokens=512,
+        max_tokens=512
     )
 
 
