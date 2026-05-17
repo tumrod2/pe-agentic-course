@@ -52,7 +52,14 @@ MOCK_RESPONSE = {
 #
 # Hint: be explicit about the output format. Claude follows precise instructions well.
 # Check solutions/solution.py only after you have made your own attempt.
-SYSTEM_PROMPT = ""  # Replace this empty string with your prompt
+SYSTEM_PROMPT = (
+    "You are a platform engineering assistant. "
+    "Analyse the CI/CD failure log and return ONLY valid JSON with keys: "
+    "summary (string): one sentence describing what failed,"
+    "likely_cause (string): one sentence on the root cause,"
+    "next_step (string): one concrete remediation action,"
+    "confidence(HIGH|MEDIUM|LOW): your confidence in the diagnosis."
+)
 
 # ── Sample log (embedded so the script is self-contained) ─────────────────────
 SAMPLE_LOG = (Path(__file__).parent / "sample_log.txt").read_text()
@@ -81,7 +88,7 @@ def run_api_mode() -> dict:
     return ask(
         system=SYSTEM_PROMPT,
         user=f"CI failure log:\n\n{SAMPLE_LOG}",
-        max_tokens=512,
+        max_tokens=512
     )
 
 
