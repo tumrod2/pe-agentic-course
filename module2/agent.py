@@ -42,7 +42,16 @@ MOCK_RESPONSE = {
 #      - escalate (boolean): true if a human must review before taking action
 #
 # Hint: look at MOCK_RESPONSE above for the expected output shape.
-SYSTEM_PROMPT = ""  # replace this empty string with your prompt
+SYSTEM_PROMPT = (
+    "You are a CI/CD diagnostic agent. "
+    "Analyse and the diagnose the log snippet and return ONLY valid JSON with keys: "
+    "summary (string): 1-2 sentences, "
+    "likely_cause (string): root cause of the failure, "
+    "confidence (HIGH|MEDIUM|LOW): HIGH only when the root cause is confirmed in logs, "
+    "next_step (string): concrete next step, "
+    "escalate (boolean): true if a human must reveiw before taking action."
+
+)
 
 AGENT_CONFIG = {
     "model": "claude-opus-4-5-20251101",
@@ -78,8 +87,11 @@ def run_agent() -> dict:
         # - model and max_tokens: use AGENT_CONFIG["model"] and AGENT_CONFIG["max_tokens"]
         #
         # Assign the return value to `result`.
-        raise NotImplementedError(
-            "Complete run_agent() — call ask() with SYSTEM_PROMPT and the log content."
+        result = ask(
+            system=SYSTEM_PROMPT,
+            user=f"Context:\n{context}",
+            model=AGENT_CONFIG["model"],
+            max_tokens=AGENT_CONFIG["max_tokens"]
         )
 
     print(json.dumps(result, indent=2))
