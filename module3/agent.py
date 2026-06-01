@@ -66,6 +66,25 @@ def run_agent() -> dict:
         print("[MOCK MODE] In real mode this runs up to 5 ReAct iterations.\n")
         result = MOCK_RESPONSE
     else:
+        history = []
+        result = {}
+        
+        for i in range(AGENT_CONFIG["max_iterations"]):
+            if (i == 0):
+                user_msg = f"Context:\n{context}"
+            else:
+                user_msg += f"\n\nPrevious iterations:\n{json.dumps(history, indent=2)}"
+            result =ask(
+                system=SYSTEM_PROMPT,
+                user=user_msg,
+                model=AGENT_CONFIG["model"],
+                max_tokens=AGENT_CONFIG["max_tokens"],
+            )
+            print(f"\n[Iteration {i + 1}]" + " " + json.dumps(result, indent=2))
+            history.append(result)
+            if(result.get("finished")):
+                break
+
         # TODO: Implement the ReAct loop.
         #
         # The loop should:
@@ -82,9 +101,6 @@ def run_agent() -> dict:
         # 3. After the loop, assign the final result and let the code below print/save it.
         #
         # Tip: run --mock first to see the expected output shape, then implement.
-        raise NotImplementedError(
-            "Implement run_agent() — build the ReAct loop. See the TODO comment above."
-        )
 
     print(json.dumps(result, indent=2))
     save_json(result, module=3)
