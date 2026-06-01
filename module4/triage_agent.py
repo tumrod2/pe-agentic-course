@@ -38,14 +38,14 @@ MOCK_RESPONSE = {
 
 # ── Prompt & config ────────────────────────────────────────────────────────────
 SYSTEM_PROMPT = (
-    "You are a deployment triage agent. The service is returning 503 errors "
-    "post-deploy with no exceptions in the logs — a silent failure. "
+    "You are a deployment triage agent. "
     "Analyse the deployment context and return ONLY valid JSON with keys: "
     "diagnosis (string), confidence (HIGH|MEDIUM|LOW), "
     "root_cause_hypothesis (string), proposed_fix (string), "
-    "recommended_action (ROLLBACK|ESCALATE|INVESTIGATE), escalate (boolean). "
-    "Use MEDIUM confidence when inferring infrastructure state from indirect signals. "
-    "HIGH confidence requires a deterministic log trace (exception, line number, etc.)."
+    "recommended_action (ROLLBACK|ESCALATE|INVESTIGATE), "
+    "escalate (boolean) true only if human intervention is required before the fix can be applied. "
+    "Rule for confidence: use MEDIUM confidence when it's infrastructure state inferrence not deterministic code errors, "
+    "HIGH confidence requires a deterministic code errors (NameError, SyntaxError)."
 )
 
 AGENT_CONFIG = {
@@ -62,7 +62,7 @@ AGENT_CONFIG = {
 }
 
 def load_sample() -> str:
-    sample = Path(__file__).parent / "sample_data.json"
+    sample = Path(__file__).parent / "sample_migration_failure.json"
     return sample.read_text()
 
 
@@ -84,7 +84,7 @@ def run_agent() -> dict:
     print(json.dumps(result, indent=2))
     save_json(result, module=4)
     print(to_step_summary(result, title="Module 4 Agent Result"))
-            
+
     if result.get("escalate"):
         print("\n🔴 ESCALATION REQUIRED — creating GitHub Issue body:")
         print(to_github_issue(result, module=4))
