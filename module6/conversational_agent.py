@@ -232,7 +232,7 @@ def phase1_route(query: str) -> str:
         system=ROUTING_SYSTEM_PROMPT,
         user=f'Query: "{query}"',
         model=MODEL,
-        max_tokens=64,
+        max_tokens=MAX_TOKENS,
     )
     return result.get("query_type", "health_check")
 

@@ -172,8 +172,12 @@ def run_gate_agent(context: dict) -> dict:
         print("[gate_agent] [MOCK] Returning pre-defined gate evaluation.")
         return {}   # filled in by main() from MOCK_SCENARIOS
 
-    # TODO: call ask() with GATE_SYSTEM_PROMPT and return the result
-    raise NotImplementedError("Implement run_gate_agent()")
+    result = ask(
+        system=GATE_SYSTEM_PROMPT,
+        user=f'pipeline results: "{json.dumps(context, indent=2)}"',
+        model=AGENT_CONFIG["model"],
+        max_tokens=AGENT_CONFIG["max_tokens"])
+    return result
 
 
 def run_rollback_agent(context: dict) -> dict:
@@ -185,8 +189,12 @@ def run_rollback_agent(context: dict) -> dict:
         print("[rollback_agent] [MOCK] Returning pre-defined rollback assessment.")
         return {}   # filled in by main() from MOCK_SCENARIOS
 
-    # TODO: call ask() with ROLLBACK_SYSTEM_PROMPT and return the result
-    raise NotImplementedError("Implement run_rollback_agent()")
+    result = ask(
+        system=ROLLBACK_SYSTEM_PROMPT,
+        user=f'post-deploy data: "{json.dumps(context, indent=2)}"',
+        model=AGENT_CONFIG["model"],
+        max_tokens=AGENT_CONFIG["max_tokens"])
+    return result
 
 
 def detect_conflict(gate_result: dict, rollback_result: dict) -> dict:
@@ -200,8 +208,40 @@ def detect_conflict(gate_result: dict, rollback_result: dict) -> dict:
 
     Return a dict with keys: detected (bool), type (str|None), resolution (str), summary (str).
     """
-    # TODO: implement conflict detection logic
-    raise NotImplementedError("Implement detect_conflict()")
+    gate_decision = gate_result.get("decision", "")
+    rollback_severity = rollback_result.get("severity", "NONE")
+
+    if (gate_decision == 'APPROVE' and rollback_severity == 'IMMEDIATE'):
+        return {
+            "detected":   True,
+            "type":       "HARD_CONFLICT",
+            "resolution": "SAFETY_FIRST_ESCALATE",
+            "summary": (
+                f"Gate Agent: {gate_decision} (stale pre-deploy snapshot). "
+                "Rollback Agent: IMMEDIATE rollback (live post-deploy data). "
+                "Hard conflict — Safety First: escalate and halt all deploys until human reviews."
+            ),
+        }
+    elif (gate_decision.startswith('APPROVE') and rollback_severity == 'SCHEDULED'):
+        return {
+            "detected":   True,
+            "type":       "SOFT_CONFLICT",
+            "resolution": "SOFT_ESCALATE",
+            "summary": (
+                f"Gate Agent: {gate_decision} (stale pre-deploy snapshot). Rollback Agent: {rollback_severity} rollback (live post-deploy data). "
+                "Soft conflict — inform on-call but no immediate action required."
+            ),
+        }
+    else:
+        return {
+            "detected":   False,
+            "type":       None,
+            "resolution": "SYNTHESISE",
+            "summary": (
+                f"Gate Agent: {gate_decision} (stale pre-deploy snapshot). Rollback Agent: {rollback_severity} rollback (live post-deploy data). "
+                "Consistent — No conflict detected. It is safe to deploy."
+            ),
+        }
 
 
 def main():
