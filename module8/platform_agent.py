@@ -278,7 +278,13 @@ def run_step_diagnose(event: dict, ingest: dict) -> dict:
     """
     # TODO: build context dict combining event and ingest result
     # TODO: call run_step("DIAGNOSE", DIAGNOSE_PROMPT, context) and return the result
-    raise NotImplementedError("Complete run_step_diagnose() — see the docstring for the pattern.")
+
+    context = {
+        "event": event,
+        "ingest_result": ingest
+    }
+
+    return  run_step("DIAGNOSE", DIAGNOSE_PROMPT, context)
 
 
 def run_step_gate(event: dict, ingest: dict) -> dict:
@@ -297,7 +303,11 @@ def run_step_gate(event: dict, ingest: dict) -> dict:
     """
     # TODO: build context dict combining event and ingest result
     # TODO: call run_step("GATE", GATE_PROMPT, context) and return the result
-    raise NotImplementedError("Complete run_step_gate() — use ingest, not diagnose.")
+    context = {
+        "event": event,
+        "classification": ingest
+    }
+    return run_step("GATE", GATE_PROMPT, context)
 
 
 def detect_conflict(diagnose: dict, gate: dict) -> dict:
@@ -373,7 +383,28 @@ def run_step_fix_or_escalate(
     # TODO: call run_step("FIX_OR_ESCALATE", FIX_OR_ESCALATE_PROMPT, context)
     # TODO: handle AUTO_FIX path — call save_fix_script() if script is present
     # TODO: return the result
-    raise NotImplementedError("Complete run_step_fix_or_escalate().")
+    context = {
+        "event": event,
+        "diagnose": diagnose,
+        "gate": gate,
+        "conflict": conflict
+    }
+
+    fix_or_escalate_result = run_step("FIX_OR_ESCALATE", FIX_OR_ESCALATE_PROMPT, context)
+    result_path = fix_or_escalate_result['path']
+    result_auto_fix_script = fix_or_escalate_result['auto_fix_script']
+
+    # the result from FIX_OR_ESCALATE_PROMPT for AUTO_FIX, should only be AUTO_FIX only after
+    # diagnose['confidence'] == 'HIGH',  diagnose['fix_possible'] == True, 'migration' not in the event logs (never auto-fix DB state)
+    # therefore, 3 out of 4 rules have met the criterion
+    # check conflict resolution and conflict_resolution != 'SAFETY_FIRST_ESCALATE'
+    conflict_resolution = conflict['resolution']
+
+    if (result_path == 'AUTO_FIX' and result_auto_fix_script is not None):
+        saved_path = save_fix_script(result_auto_fix_script, pipeline_id)
+        fix_or_escalate_result["fix_script_path"] = str(saved_path)
+
+    return fix_or_escalate_result
 
 
 def generate_report(pipeline_id: str, steps: dict) -> dict:
@@ -384,7 +415,12 @@ def generate_report(pipeline_id: str, steps: dict) -> dict:
     """
     # TODO: build context dict
     # TODO: call run_step("REPORT", REPORT_PROMPT, context) and return the result
-    raise NotImplementedError("Complete generate_report().")
+    context = {
+        "pipeline_id" : pipeline_id,
+        "steps": steps
+    }
+
+    return run_step("REPORT", REPORT_PROMPT, context)
 
 
 # ── Orchestrator — do not modify ───────────────────────────────────────────────
