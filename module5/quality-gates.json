@@ -47,7 +47,7 @@
       "id": "latency_p95_delta",
       "name": "P95 Latency Regression",
       "metric": "latency_p95_delta_pct",
-      "threshold": 10,
+      "threshold": 5,
       "operator": "<=",
       "unit": "%",
       "rollback_trigger": true,
