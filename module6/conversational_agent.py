@@ -228,12 +228,13 @@ def phase1_route(query: str) -> str:
             return "investigation"
         return "health_check"
 
-    return ask(
+    result = ask(
         system=ROUTING_SYSTEM_PROMPT,
         user=f'Query: "{query}"',
         model=MODEL,
         max_tokens=64,
-    ).get("query_type", "health_check")
+    )
+    return result.get("query_type", "health_check")
 
 
 def phase2_analyse(query: str, query_type: str, platform_data: dict) -> dict:
