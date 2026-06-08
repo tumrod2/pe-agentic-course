@@ -34,8 +34,7 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: pip install anthropic
-            pip install pygithub
+        run: pip install anthropic pygithub
 
       - name: Run Module 8 capstone agent
         env:
