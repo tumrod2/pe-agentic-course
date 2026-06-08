@@ -542,7 +542,7 @@ def main():
         print(f"   Issue  : {final.get('github_issue_title')}")
         body = to_github_issue(final, module=8)
         print(body)
-        #create_github_issue(final.get('github_issue_title'), body)
+        create_github_issue(final.get('github_issue_title'), body)
     else:
         print("\n✅ Pipeline resolved — no escalation required.")
 
