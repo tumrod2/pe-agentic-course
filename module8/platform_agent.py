@@ -511,10 +511,13 @@ def main():
                         help="Inject a synthetic CI failure event instead of reading sample_data.json")
     parser.add_argument("--mock", action="store_true",
                         help="Return pre-defined responses — no API key needed")
+
+    # additional argument for event file
     parser.add_argument("--file", type=str,
-                        help="Inject log file into the event loader")
+                        help="Inject dynamic log file into the event loader instead of static sample_data.json")
     args = parser.parse_args()
 
+    # load event file
     event = load_event(simulate=args.simulate, file_name=args.file)
 
     if MOCK_MODE:
@@ -539,7 +542,7 @@ def main():
         print(f"   Issue  : {final.get('github_issue_title')}")
         body = to_github_issue(final, module=8)
         print(body)
-        create_github_issue(final.get('github_issue_title'), body)
+        #create_github_issue(final.get('github_issue_title'), body)
     else:
         print("\n✅ Pipeline resolved — no escalation required.")
 

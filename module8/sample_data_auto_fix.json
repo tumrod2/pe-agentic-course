@@ -12,7 +12,7 @@
   },
   "logs": [
     "2024-05-23 09:12:01 INFO  [ci-runner] Build #782 started",
-    "2024-05-23 09:12:45 INFO  [ci-runner] Unit tests passed (874/874)",
+    "2024-05-23 09:12:45 INFO  [ci-runner] Unit tests passed (1117/1120)",
     "2024-05-23 09:13:10 INFO  [ci-runner] Docker network bridge initialized",
     "2024-05-23 09:14:02 WARN  [ci-runner] Container startup latency high: 4800ms (threshold: 3000ms)",
     "2024-05-23 09:14:03 ERROR [ci-runner] Test failed: PaymentGatewayTest::testRefundCallback — connection timeout after 3000ms",

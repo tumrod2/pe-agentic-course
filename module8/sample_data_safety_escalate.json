@@ -10,7 +10,7 @@
     "[2024-03-15 14:00:01] INFO  Commit: a3f9c21 — \"added dynamic search filter to user API\"",
     "[2024-03-15 14:00:02] INFO  Author: dev-jane@company.com",
     "[2024-03-15 14:00:02] INFO  Running stages: lint → build → security-scan → test → deploy",
-    "[2024-03-15 14:01:10] INFO  Starting static analysis on commit a3f9c21...",
+    "[2024-03-15 14:01:10] INFO  Starting static analysis on commit a3f9c21...", 
     "[2024-03-15 14:01:11] INFO  Running SAST scanner (Semgrep v1.45.0)...",
     "[2024-03-15 14:01:14] INFO  Running dependency audit (Snyk)...",
     "[2024-03-15 14:01:18] INFO  Running secrets scan (detect-secrets)...",

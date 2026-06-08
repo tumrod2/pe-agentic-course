@@ -35,6 +35,7 @@ jobs:
 
       - name: Install dependencies
         run: pip install anthropic
+            pip install pygithub
 
       - name: Run Module 8 capstone agent
         env:
@@ -42,7 +43,7 @@ jobs:
           MOCK_MODE: ${{ secrets.ANTHROPIC_API_KEY == '' && '1' || '0' }}
         run: |
           if [ "${{ github.event.inputs.simulate }}" = "false" ]; then
-            python module8/platform_agent.py
+            python module8/platform_agent.py --file "sample_data_auto_fix.json"
           else
             python module8/platform_agent.py --simulate
           fi
