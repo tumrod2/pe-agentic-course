@@ -1,0 +1,36 @@
+{
+  "trigger": "github_actions_failure",
+  "pipeline_id": "pipe-2024-0523-087",
+  "repo": "org/payment-service",
+  "branch": "main",
+  "commit_sha": "3c7b9d2",
+  "failure_stage": "integration-tests",
+  "test_results": {
+    "total": 1120,
+    "passed": 1117,
+    "failed": 3
+  },
+  "logs": [
+    "2024-05-23 09:12:01 INFO  [ci-runner] Build #782 started",
+    "2024-05-23 09:12:45 INFO  [ci-runner] Unit tests passed (874/874)",
+    "2024-05-23 09:13:10 INFO  [ci-runner] Docker network bridge initialized",
+    "2024-05-23 09:14:02 WARN  [ci-runner] Container startup latency high: 4800ms (threshold: 3000ms)",
+    "2024-05-23 09:14:03 ERROR [ci-runner] Test failed: PaymentGatewayTest::testRefundCallback — connection timeout after 3000ms",
+    "2024-05-23 09:14:03 ERROR [ci-runner] Test failed: OrderServiceTest::testAsyncQueueFlush — RabbitMQ not ready, retry limit reached",
+    "2024-05-23 09:14:04 ERROR [ci-runner] Test failed: NotificationServiceTest::testEmailDispatch — SMTP mock container unreachable",
+    "2024-05-23 09:14:05 WARN  [ci-runner] CPU throttling detected on runner node (node-12): 91% utilization",
+    "2024-05-23 09:14:06 WARN  [ci-runner] All 3 failures are infrastructure-related, no assertion errors detected",
+    "2024-05-23 09:14:07 INFO  [ci-runner] Flakiness pattern matched: transient container networking issue",
+    "2024-05-23 09:14:08 INFO  [ci-runner] Auto-fix eligible: retry_on_infra_failure = true",
+    "2024-05-23 09:14:09 INFO  [ci-runner] Build #782 failed — queuing auto-retry on fresh runner node"
+  ],
+  "failure_classification": "transient_infra",
+  "previous_run_status": "success",
+  "flaky_test_history": {
+    "PaymentGatewayTest::testRefundCallback": { "flake_rate": "12%", "last_genuine_fail": "2024-03-01" },
+    "OrderServiceTest::testAsyncQueueFlush": { "flake_rate": "9%", "last_genuine_fail": "2024-02-14" },
+    "NotificationServiceTest::testEmailDispatch": { "flake_rate": "7%", "last_genuine_fail": "never" }
+  },
+  "rollback_available": false,
+  "notify_human": false
+}

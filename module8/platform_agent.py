@@ -58,6 +58,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
+from github_pr import create_github_issue
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -206,7 +207,7 @@ AGENT_CONFIG = {
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
-def load_event(simulate: bool) -> dict:
+def load_event(simulate: bool, file_name: str) -> dict:
     """Load the CI failure event. --simulate injects a synthetic event."""
     if simulate:
         return {
@@ -224,7 +225,7 @@ def load_event(simulate: bool) -> dict:
             ],
             "rollback_available": True,
         }
-    sample = Path(__file__).parent / "sample_data.json"
+    sample = Path(__file__).parent / file_name
     return json.loads(sample.read_text())
 
 
@@ -398,7 +399,12 @@ def run_step_fix_or_escalate(
     # diagnose['confidence'] == 'HIGH',  diagnose['fix_possible'] == True, 'migration' not in the event logs (never auto-fix DB state)
     # therefore, 3 out of 4 rules have met the criterion
     # check conflict resolution and conflict_resolution != 'SAFETY_FIRST_ESCALATE'
+
     conflict_resolution = conflict['resolution']
+    # if it's SAFETY_FIRST_ESCALATE, the fix_or_escalate_result['path'] should be 'ESCALATE' not 'AUTO_FIX'
+    if (conflict_resolution == 'SAFETY_FIRST_ESCALATE'):
+        fix_or_escalate_result['path'] = 'ESCALATE'
+        result_path = 'ESCALATE'
 
     if (result_path == 'AUTO_FIX' and result_auto_fix_script is not None):
         saved_path = save_fix_script(result_auto_fix_script, pipeline_id)
@@ -505,9 +511,11 @@ def main():
                         help="Inject a synthetic CI failure event instead of reading sample_data.json")
     parser.add_argument("--mock", action="store_true",
                         help="Return pre-defined responses — no API key needed")
+    parser.add_argument("--file", type=str,
+                        help="Inject log file into the event loader")
     args = parser.parse_args()
 
-    event = load_event(simulate=args.simulate)
+    event = load_event(simulate=args.simulate, file_name=args.file)
 
     if MOCK_MODE:
         print("[MOCK MODE] Returning pre-defined 5-step pipeline report.")
@@ -529,7 +537,9 @@ def main():
         print("\n🔴 ESCALATION REQUIRED")
         print(f"   Action : {final.get('recommended_action')}")
         print(f"   Issue  : {final.get('github_issue_title')}")
-        print(to_github_issue(result, module=8))
+        body = to_github_issue(final, module=8)
+        print(body)
+        create_github_issue(final.get('github_issue_title'), body)
     else:
         print("\n✅ Pipeline resolved — no escalation required.")
 
