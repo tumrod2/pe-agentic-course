@@ -2,9 +2,9 @@ from github import Github
 import os
 
 def create_github_issue(title: str, body: str):
-    github_token = os.environ.get("GITHUB_TOKEN")
-    github_repo = os.environ.get("GITHUB_REPO")
-    user_name =os.environ.get("GITHUB_USER_NAME")
+    github_token = os.environ.get("GH_TOKEN")
+    github_repo = os.environ.get("GH_REPO")
+    user_name =os.environ.get("GH_USER_NAME")
     g = Github(github_token)
 
     repo = g.get_repo(github_repo)
